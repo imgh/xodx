@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file is part of the {@link http://aksw.org/Projects/Xodx Xodx} project.
+ *
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ */
 
 // include password hash functions for 5.3.7 <= PHP < 5.5
 require_once('password_compat/lib/password.php');
@@ -23,6 +28,15 @@ class Xodx_ApplicationController extends Saft_Controller
      */
     private $_user;
 
+    /**
+     * Create a new user account including a sioc:UserAccount, a foaf:PersonalProfileDocument and a
+     * foaf:Person.
+     *
+     * @param personUri (post) optionally an already existing webid which will be imported to the
+     *          newly created persion.
+     * @param username (post) a username chosen by the user which should not be already registered
+     * @param password (post) a password chosen by the user (this will be plain, TODO: encrypt)
+     */
     public function newuserAction ($template) {
         $nsPingback = 'http://purl.org/net/pingback/';
         $nsRdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
@@ -83,6 +97,7 @@ class Xodx_ApplicationController extends Saft_Controller
 
                 // create new person
                 $newPersonUri = $this->_app->getBaseUri() . '?c=person&id=' . urlencode($username);
+                $newUserUri = $this->_app->getBaseUri() . '?c=user&id=' . urlencode($username);
                 $newPersonFeed = $this->_app->getBaseUri() . '?c=feed&a=getFeed&uri='
                     . urlencode($newPersonUri);
                 $newPerson = array(
@@ -91,6 +106,12 @@ class Xodx_ApplicationController extends Saft_Controller
                             array(
                                 'type' => 'uri',
                                 'value' => $nsFoaf . 'Person'
+                            )
+                        ),
+                        $nsFoaf . 'account' => array(
+                            array(
+                                'type' => 'uri',
+                                'value' => $newUserUri
                             )
                         ),
                         $nsFoaf . 'nick' => array(
@@ -133,7 +154,6 @@ class Xodx_ApplicationController extends Saft_Controller
 
                 $store->addMultipleStatements($graphUri, $newPerson);
 
-                $newUserUri = $this->_app->getBaseUri() . '?c=user&id=' . urlencode($username);
                 $newUser = array(
                      $newUserUri => array(
                         $nsRdf . 'type' => array(
@@ -191,6 +211,12 @@ class Xodx_ApplicationController extends Saft_Controller
         return $template;
     }
 
+    /**
+     * The login action takes the given credentials and calls the login method with them
+     *
+     * @param username (post) the username used for the login
+     * @param password (post) the password used for the login (TODO: encrypt)
+     */
     public function loginAction ($template) {
         $bootstrap = $this->_app->getBootstrap();
         $request = $bootstrap->getResource('request');
@@ -206,6 +232,14 @@ class Xodx_ApplicationController extends Saft_Controller
         return $template;
     }
 
+    /**
+     * The login method checks the given credentials and changes the session properties, if login
+     * was successfull.
+     *
+     * @param $username the username to be verified and logged in
+     * @param $password the password to be verified
+     * @return boolean if the login was successfull
+     */
     public function login ($username = null, $password = null)
     {
         if ($username == 'guest' || ($username !== null && $password !== null)) {
@@ -233,6 +267,9 @@ class Xodx_ApplicationController extends Saft_Controller
         }
     }
 
+    /**
+     * Checks if thre is a logged in user in the session, alse login as guest:guest
+     */
     public function authenticate ()
     {
         $bootstrap = $this->_app->getBootstrap();
@@ -246,6 +283,9 @@ class Xodx_ApplicationController extends Saft_Controller
         }
     }
 
+    /**
+     * Returns the currently logged in user
+     */
     public function getUser ()
     {
         return $this->_user;

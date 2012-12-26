@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file is part of the {@link http://aksw.org/Projects/Xodx Xodx} project.
+ *
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ */
 
 class Xodx_ResourceController extends Saft_Controller
 {
@@ -184,6 +189,8 @@ class Xodx_ResourceController extends Saft_Controller
         $bootstrap = $this->_app->getBootstrap();
         $model = $bootstrap->getResource('model');
 
+        //TODO return array of all found types
+
         $query = '' .
             'SELECT ?type ' .
             'WHERE { ' .
@@ -191,7 +198,10 @@ class Xodx_ResourceController extends Saft_Controller
 
         $type = $model->sparqlQuery($query);
         //TODO get linked data if resource is not in out namespace
-
-        return $type[0]['type'];
+        if (isset($type[0]['type'])) {
+            return $type[0]['type'];
+        } else {
+            return false;
+        }
     }
 }
