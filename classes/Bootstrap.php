@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file is part of the {@link http://aksw.org/Projects/Xodx Xodx} project.
+ *
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ */
 
 /**
  * This Class is responsible to initialize resources and returning them on request.
@@ -20,6 +25,21 @@ class Bootstrap extends Saft_Bootstrap
         // TODO move most settings into the model
 
         return $configArray['xodx'];
+    }
+
+    /**
+     * Initializes all namespace prefixes
+     */
+    protected function initNamespacesConfig ()
+    {
+        $configPath = $this->_app->getBaseDir() . 'config.ini';
+
+        $configArray = parse_ini_file($configPath, true);
+
+        // TODO merge with some default settings
+        // TODO move most settings into the model
+
+        return $configArray['namespaces'];
     }
 
     /**

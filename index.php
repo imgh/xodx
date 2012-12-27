@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file is part of the {@link http://aksw.org/Projects/Xodx Xodx} project.
+ *
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ */
 
 $main_dir = rtrim(dirname(__FILE__), '/\\');
 
@@ -27,6 +32,7 @@ $includePath .= $main_dir . '/classes/Xodx/' . PATH_SEPARATOR;
 $includePath .= $main_dir . '/libraries/' . PATH_SEPARATOR;
 $includePath .= $main_dir . '/libraries/Erfurt/library/' . PATH_SEPARATOR;
 $includePath .= $main_dir . '/libraries/lib-dssn-php/' . PATH_SEPARATOR;
+$includePath .= $main_dir . '/libraries/ARC2/' . PATH_SEPARATOR;
 
 set_include_path($includePath);
 
@@ -39,6 +45,9 @@ $autoloader->registerNamespace('Erfurt_');
 $autoloader->registerNamespace('Saft_');
 $autoloader->registerNamespace('Xodx_');
 $autoloader->registerNamespace('DSSN_');
+$autoloader->registerNamespace('ARC2_');
+
+DSSN_Utils::setConstants();
 
 DSSN_Utils::setConstants();
 
